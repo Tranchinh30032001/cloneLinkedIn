@@ -14,6 +14,7 @@ export const PostAPI = createAsyncThunk(
 				descriptions: payload.user.email || null,
 				title: payload.user.displayName || null,
 				image: payload.user.photoUrl || null,
+				uidOwner: payload.user.uid,
 			},
 			contentPost: payload.contentPost,
 			numberLike: payload.numberLike,

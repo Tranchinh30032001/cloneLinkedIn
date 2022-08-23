@@ -2,7 +2,9 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import React, { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login";
+import { addDocument } from "../firebase/addDoc";
 import { auth } from "../firebase/firebase";
+import { generateKeywords } from "../redux/selectors";
 
 function LoginPage() {
 	const userNameRef = useRef();
@@ -16,7 +18,6 @@ function LoginPage() {
 		e.preventDefault();
 		if (!userNameRef.current.value) {
 			return alert("xin vui long kiem tra lai");
-			return;
 		}
 		setLoading(true);
 		createUserWithEmailAndPassword(
@@ -30,7 +31,16 @@ function LoginPage() {
 					photoURL: urlRef.current.value,
 				})
 					.then(() => {
-						console.log("update successfully");
+						const { email, displayName, uid, photoURL, providerId } =
+							userCredential.user;
+						addDocument("users", {
+							email: email,
+							name: displayName,
+							photoUrl: photoURL,
+							uid: uid,
+							providerId: providerId,
+							keyWord: generateKeywords(displayName),
+						});
 						navigate("/signin");
 						setLoading(false);
 					})
@@ -46,7 +56,7 @@ function LoginPage() {
 			<Login.Logo src={"./img/LinkedLogin.svg"} />
 			<Login.Inner>
 				<Login.Form>
-					<Login.Heading>Sign Up</Login.Heading>
+					<Login.Heading>Log Up</Login.Heading>
 					<Login.Notice>Stay updated on your professional world</Login.Notice>
 
 					<Login.Input

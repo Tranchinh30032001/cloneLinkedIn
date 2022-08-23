@@ -2,19 +2,25 @@ import { Avatar } from "@material-ui/core";
 import React, { memo } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { selectedRoomId } from "../../redux/UserSlice";
 
-function GroupChat({ nameGroup, id, createdAt, setSelectGroup }) {
+function GroupChat({ nameGroup, id, imageGroupChat }) {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const handleSelectRoom = () => {
 		if (id) {
 			navigate(`room/${id}`);
-			setSelectGroup({ nameGroup, id, createdAt });
+			dispatch(selectedRoomId(id));
 		}
 	};
 	return (
 		<Container onClick={handleSelectRoom}>
 			<Flex>
-				<Avatar style={{ width: "3.6rem", height: "3.6rem" }} />
+				<Avatar
+					src={imageGroupChat}
+					style={{ width: "3.6rem", height: "3.6rem" }}
+				/>
 				<Box>
 					<h3>{nameGroup ? nameGroup : ""}</h3>
 				</Box>
@@ -28,7 +34,9 @@ const Container = styled.div`
 	padding: 1rem 0;
 	margin-top: 0.6rem;
 	&:hover {
-		background-color: #ddd;
+		/* opacity: 0.6; */
+		background-color: #ffff;
+		color: #000;
 	}
 `;
 const Box = styled.div`

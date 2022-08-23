@@ -4,13 +4,13 @@ import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import ThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import React, { forwardRef, memo, useState } from "react";
 import LazyLoad from "react-lazyload";
 import ReactPlayer from "react-player/youtube";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase/firebase";
-import { selectUser } from "../../redux/UserSlice";
+import { userSelector } from "../../redux/selectors";
 import Comment from "./Comment";
 import FieldComment from "./FieldComment";
 import Feed from "./index";
@@ -30,9 +30,10 @@ const Post = forwardRef(
 		},
 		refPost
 	) => {
-		const user = useSelector(selectUser);
+		const user = useSelector(userSelector);
 		const [like, setLike] = useState(false);
 		const [showDelete, setShowDelete] = useState(false);
+		const [noticeDelete, setNoticeDelete] = useState(false);
 		const handleLike = () => {
 			const target = doc(db, "posts", id);
 			updateDoc(target, {
@@ -47,15 +48,25 @@ const Post = forwardRef(
 			setLike(!like);
 		};
 
-		const handleDelete = () => {
+		const handleDelete = async () => {
 			const target = doc(db, "posts", id);
-			deleteDoc(target)
-				.then(() => {
-					console.log("delete success");
-				})
-				.catch((error) => {
-					console.log("delete fail: " + error);
-				});
+			const contentTarget = await getDoc(target);
+			const ownerPost = contentTarget.data().actor.uidOwner;
+			if (user.uid === ownerPost) {
+				deleteDoc(target)
+					.then(() => {
+						console.log("delete success");
+					})
+					.catch((error) => {
+						console.log("delete fail: " + error);
+					});
+			} else {
+				setNoticeDelete(true);
+				setTimeout(() => {
+					setNoticeDelete(false);
+				}, 3000);
+			}
+			setShowDelete(false);
 		};
 		return (
 			<>
@@ -74,6 +85,21 @@ const Post = forwardRef(
 								<button onClick={handleDelete} className="delete">
 									Delete
 								</button>
+							)}
+							{noticeDelete && (
+								<h3
+									style={{
+										position: "absolute",
+										width: "10rem",
+										right: "-0.5rem",
+										textAlign: "center",
+										boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.3)",
+										padding: "0.4rem 1rem",
+										borderRadius: "0.5rem",
+									}}
+								>
+									Bạn không thể xóa bài viết
+								</h3>
 							)}
 						</div>
 					</Feed.User>

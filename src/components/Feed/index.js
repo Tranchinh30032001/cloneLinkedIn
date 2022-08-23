@@ -37,9 +37,9 @@ Feed.ButtonPost = function FeedForm({ children, handleModal }) {
 Feed.Break = () => {
 	return <Break />;
 };
-Feed.Options = ({ children, Icon, color }) => {
+Feed.Options = ({ children, Icon, color, handleModal }) => {
 	return (
-		<Options>
+		<Options onClick={handleModal}>
 			<Icon style={{ color: color }} className="icon" />
 			{children}
 		</Options>

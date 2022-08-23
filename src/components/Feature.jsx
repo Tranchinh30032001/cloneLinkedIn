@@ -1,16 +1,8 @@
-import {
-	getAdditionalUserInfo,
-	GoogleAuthProvider,
-	signInWithPopup,
-} from "firebase/auth";
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { addDocument } from "../firebase/addDoc";
-import { auth } from "../firebase/firebase";
-import { signInAPI } from "../redux/UserSlice";
-
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import { signInAPI } from "../redux/UserSlice";
 
 function Feature() {
 	const dispatch = useDispatch();

@@ -5,32 +5,50 @@ import MessageOutlinedIcon from "@material-ui/icons/MessageOutlined";
 import MoreVertTwoToneIcon from "@material-ui/icons/MoreVertTwoTone";
 import SearchIcon from "@material-ui/icons/Search";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import React, { memo, useCallback, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import GroupChat from "../components/GroupChat";
 import { db } from "../firebase/firebase";
 import { useFireStore } from "../firebase/useFireStore";
-import { useParams } from "react-router-dom";
+import { listRoom } from "../redux/UserSlice";
+import { listImage } from "../listImageRandom";
 
-function SidebarChat({ user, setSelectGroup }) {
+function SidebarChat({ user }) {
+	const dispatch = useDispatch();
+	const { uid } = user || "1111";
 	const [addChat, setAddChat] = useState(false);
 	const { roomId } = useParams();
 	const nameRoomRef = useRef();
 	const handleAddChat = () => {
 		setAddChat(true);
 	};
-	const handleSubmit = useCallback((e) => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
 		const nameRoom = nameRoomRef.current.value;
 		const target = collection(db, "rooms");
+		const numberRandom = Math.floor(Math.random() * 24);
 		const payload = {
 			nameRoom,
+			members: [uid],
 			createdAt: serverTimestamp(),
+			ownerRoom: uid,
+			imageGroupChat: listImage[numberRandom],
 		};
 		addDoc(target, payload);
 		setAddChat(false);
-	}, []);
-	const result = useFireStore("rooms");
+	};
+	const roomConditon = useMemo(() => {
+		return {
+			fieldName: "members",
+			operator: "array-contains",
+			compareValue: uid,
+		};
+	}, [uid]);
+	const result = useFireStore("rooms", roomConditon);
+	dispatch(listRoom([...result]));
+
 	return (
 		<Container roomId={roomId ? roomId : null}>
 			<PrivateUser>
@@ -50,17 +68,23 @@ function SidebarChat({ user, setSelectGroup }) {
 					<h2>Group Chat</h2>
 					<div className="wrapper__chat">
 						{result?.length > 0 &&
-							result.map(({ id, data: { nameRoom, createdAt } }) => {
-								return (
-									<GroupChat
-										setSelectGroup={setSelectGroup}
-										key={id}
-										nameGroup={nameRoom}
-										createdAt={createdAt}
-										id={id}
-									/>
-								);
-							})}
+							result.map(
+								({
+									id,
+									data: { nameRoom, createdAt, members, imageGroupChat },
+								}) => {
+									return (
+										<GroupChat
+											key={id}
+											nameGroup={nameRoom}
+											// createdAt={createdAt}
+											id={id}
+											// members={members}
+											imageGroupChat={imageGroupChat}
+										/>
+									);
+								}
+							)}
 					</div>
 				</div>
 			</WindowChat>
@@ -79,7 +103,7 @@ function SidebarChat({ user, setSelectGroup }) {
 			)}
 			<div onClick={handleAddChat} className="footer">
 				<AddIcon />
-				<button>Add a new chat</button>
+				<button>Add a new group chat</button>
 			</div>
 		</Container>
 	);
@@ -87,15 +111,18 @@ function SidebarChat({ user, setSelectGroup }) {
 
 export default memo(SidebarChat);
 const Container = styled.div`
-	flex: 0.25;
+	flex: 0.2;
 	display: flex;
 	flex-direction: column;
+	background-color: #0d5fc3df;
+	color: #ffff;
 	.footer {
 		margin-top: auto;
 		padding: 2rem 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background-color: #0ead69;
 		cursor: pointer;
 		& > .MuiSvgIcon-root {
 			font-size: 2rem;
@@ -104,6 +131,8 @@ const Container = styled.div`
 		button {
 			font-weight: 600;
 			cursor: pointer;
+			background-color: transparent;
+			color: #fff;
 		}
 	}
 	@media screen and (max-width: 723px) {
@@ -139,6 +168,7 @@ const PrivateUser = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	color: #fff;
 `;
 const SearchForm = styled.form`
 	background-color: #ccc;
@@ -158,7 +188,18 @@ const SearchForm = styled.form`
 const WindowChat = styled.div`
 	flex: 1;
 	height: 70vh;
-	background-color: #ffffff;
+	overflow: auto;
+	::-webkit-scrollbar {
+		width: 1rem;
+	}
+	/* html::-webkit-scrollbar-track {
+		background-color: blue;
+	}
+	html::-webkit-scrollbar-thumb {
+		background-color: yellow;
+	} */
+	/* background-color: #62b6cb; */
+	border-top: 1px solid #cccccc;
 	h2 {
 		padding: 1rem;
 	}

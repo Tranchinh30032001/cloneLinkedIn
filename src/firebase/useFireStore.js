@@ -9,30 +9,33 @@ import { useEffect, useState } from "react";
 import { db } from "./firebase";
 
 export const useFireStore = (table, codition) => {
-	const [posts, setPosts] = useState([]);
+	const [document, setDocument] = useState([]);
 	useEffect(() => {
 		const target = collection(db, table);
-		const targetSort = query(target, orderBy("createdAt", "desc"));
+		let targetSort = query(target, orderBy("createdAt", "desc"));
 		if (codition) {
-			if (!codition.value || !codition.value.length) {
+			// vì firestore sẽ không chấp nhận một compare value có  giá trị null hay empty array nên cần kiểm tra
+			if (!codition.compareValue || !codition.compareValue.length) {
 				return;
 			}
-			const targetSort = query(
+			targetSort = query(
 				targetSort,
-				where(codition.fieldName, codition.operator, codition.value)
+				where(codition.fieldName, codition.operator, codition.compareValue)
 			);
 		}
 		const unSubscribe = onSnapshot(targetSort, (snap) => {
-			const data = snap.docs.map((doc) => ({
-				id: doc.id,
-				data: doc.data(),
-			}));
-			setPosts(data);
+			const data = snap.docs.map((doc) => {
+				return {
+					id: doc.id,
+					data: doc.data(),
+				};
+			});
+			setDocument(data);
 		});
 		return () => {
-			setPosts([]);
+			setDocument([]);
 			unSubscribe();
 		};
 	}, [collection, codition]);
-	return posts;
+	return document;
 };

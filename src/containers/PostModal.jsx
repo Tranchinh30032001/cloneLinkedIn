@@ -4,15 +4,15 @@ import CloseIcon from "@material-ui/icons/Close";
 import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 import OndemandVideoIcon from "@material-ui/icons/OndemandVideo";
 import { serverTimestamp } from "firebase/firestore";
-import React, { memo, useCallback, useRef, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { PostAPI } from "../action";
-import { selectUser } from "../redux/UserSlice";
+import { userSelector } from "../redux/selectors";
 function PostModal({ handleModal }) {
 	const dispatch = useDispatch();
-	const user = useSelector(selectUser);
+	const user = useSelector(userSelector);
 	const [openDocument, setOpenDocument] = useState(false);
 	const [image, setImage] = useState("");
 	const [typeShow, setTypeShow] = useState("");

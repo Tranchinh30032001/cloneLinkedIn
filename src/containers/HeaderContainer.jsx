@@ -9,10 +9,10 @@ import WorkIcon from "@material-ui/icons/Work";
 import React from "react";
 import { useSelector } from "react-redux";
 import Header from "../components/Header";
-import { selectUser } from "../redux/UserSlice";
+import { userSelector } from "../redux/selectors";
 
 function HeaderContainer() {
-	const user = useSelector(selectUser);
+	const user = useSelector(userSelector);
 	return (
 		<Header>
 			<Header.Flex>

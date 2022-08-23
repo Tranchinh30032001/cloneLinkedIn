@@ -19,6 +19,7 @@ export const Global = createGlobalStyle`
     html{
         font-family: 'Roboto', sans-serif;
         font-size: 62.5%;
+        overflow-X: hidden;
     }
     body{
         background-color: rgb(243,242,239);

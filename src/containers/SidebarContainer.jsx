@@ -5,10 +5,10 @@ import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import React, { memo } from "react";
 import { useSelector } from "react-redux";
 import Sidebar from "../components/Sidebar";
-import { selectUser } from "../redux/UserSlice";
+import { userSelector } from "../redux/selectors";
 
 function SidebarContainer() {
-	const user = useSelector(selectUser);
+	const user = useSelector(userSelector);
 	return (
 		<Sidebar>
 			<Sidebar.Section>

@@ -2,10 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-
 const firebaseConfig = {
 	apiKey: "AIzaSyAp1-LNDDs6s2-Oz_9fJKm26Kmq-YEWoYQ",
 	authDomain: "linkedin-8ce99.firebaseapp.com",
+	databaseURL:
+		"https://linkedin-8ce99-default-rtdb.asia-southeast1.firebasedatabase.app",
 	projectId: "linkedin-8ce99",
 	storageBucket: "linkedin-8ce99.appspot.com",
 	messagingSenderId: "951450777597",

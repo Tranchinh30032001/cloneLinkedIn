@@ -1,13 +1,16 @@
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useCallback, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login";
+import { addDocument } from "../firebase/addDoc";
 
 function SignUpPage() {
 	const [error, setError] = useState(false);
 	const emailRef = useRef();
 	const passwordRef = useRef();
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const handleClick = useCallback((e) => {
 		e.preventDefault();
@@ -48,7 +51,7 @@ function SignUpPage() {
 							Please try to check your accout !
 						</p>
 					)}
-					<Login.Heading>Sign In</Login.Heading>
+					<Login.Heading>Login</Login.Heading>
 					<Login.Notice>Stay updated on your professional world</Login.Notice>
 
 					<Login.Input properties={emailRef} type="text" placeholder="Email" />

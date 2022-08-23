@@ -7,17 +7,16 @@ import OndemandVideoIcon from "@material-ui/icons/OndemandVideo";
 import React, { useCallback, useMemo, useState } from "react";
 import FlipMove from "react-flip-move";
 import LazyLoad from "react-lazyload";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Feed from "../components/Feed";
 import Post from "../components/Feed/Post";
 import { useFireStore } from "../firebase/useFireStore";
-import { statusSelector } from "../redux/selectors";
-import { loading, selectUser } from "../redux/UserSlice";
+import { statusSelector, userSelector } from "../redux/selectors";
 import PostModal from "./PostModal";
 
 function FeedContainer() {
 	const [modal, setModal] = useState(false);
-	const user = useSelector(selectUser);
+	const user = useSelector(userSelector);
 	const statusLoading = useSelector(statusSelector);
 	const datas = useFireStore("posts");
 	const renderPost = useMemo(() => {
@@ -33,18 +32,26 @@ function FeedContainer() {
 	}, [datas]);
 
 	const handleModal = useCallback(() => {
-		setModal(!modal);
-	}, [modal]);
+		setModal((prevModal) => !prevModal);
+	}, []);
 	return (
 		<Feed>
 			<Feed.Post>
 				<Avatar src={user?.photoUrl} />
 				<Feed.ButtonPost handleModal={handleModal} />
 				<Feed.Break />
-				<Feed.Options color="rgb(112,181,249)" Icon={InsertPhotoIcon}>
+				<Feed.Options
+					handleModal={handleModal}
+					color="rgb(112,181,249)"
+					Icon={InsertPhotoIcon}
+				>
 					Photo
 				</Feed.Options>
-				<Feed.Options color="rgb(127,193,94)" Icon={OndemandVideoIcon}>
+				<Feed.Options
+					handleModal={handleModal}
+					color="rgb(127,193,94)"
+					Icon={OndemandVideoIcon}
+				>
 					Video
 				</Feed.Options>
 				<Feed.Options color="rgb(231,163,62)" Icon={AssignmentIcon}>
